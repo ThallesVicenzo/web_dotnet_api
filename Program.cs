@@ -36,6 +36,13 @@ app.MapGet("/getproductWithHeader", (HttpRequest request) =>
 }
 );
 
+app.MapPut("/editproduct", (Product product) =>
+{
+  var productSaved = ProductRepository.getBy(product.Code);
+
+  productSaved.Name = product.Name;
+});
+
 app.Run();
 
 public static class ProductRepository
