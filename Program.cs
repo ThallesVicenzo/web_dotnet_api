@@ -43,6 +43,12 @@ app.MapPut("/editproduct", (Product product) =>
   productSaved.Name = product.Name;
 });
 
+app.MapDelete("/deleteproduct/{code}", ([FromRoute] string code) =>
+{
+  var productSaved = ProductRepository.getBy(code);
+  ProductRepository.remove(productSaved);
+});
+
 app.Run();
 
 public static class ProductRepository
@@ -60,6 +66,11 @@ public static class ProductRepository
   public static Product getBy(string code)
   {
     return Products.FirstOrDefault(p => p.Code == code);
+  }
+
+  public static void remove(Product product)
+  {
+    Products.Remove(product);
   }
 
 
