@@ -14,7 +14,7 @@ app.MapGet("/AddHeader", (HttpResponse response) =>
 
 app.MapPost("/saveproduct", (Product product) =>
 {
-  return product.Code + " - " + product.Name;
+  ProductRepository.add(product);
 });
 
 //dynamic params per URL
@@ -26,7 +26,8 @@ app.MapGet("/getproduct", ([FromQuery] string dateStart, [FromQuery] string date
 //required params per URL
 app.MapGet("/getproduct/{code}", ([FromRoute] string code) =>
 {
-  return code;
+  var product = ProductRepository.getBy(code);
+  return product;
 });
 
 app.MapGet("/getproductWithHeader", (HttpRequest request) =>
@@ -51,7 +52,7 @@ public static class ProductRepository
 
   public static Product getBy(string code)
   {
-    return Products.First(p => p.Code == code);
+    return Products.FirstOrDefault(p => p.Code == code);
   }
 
 
