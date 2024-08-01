@@ -78,7 +78,7 @@ public static class ProductRepository
 
   public static void remove(Product product)
   {
-    Products.Remove(product);
+    Products?.Remove(product);
   }
 
 
