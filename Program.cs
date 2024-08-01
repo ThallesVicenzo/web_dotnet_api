@@ -12,19 +12,19 @@ app.MapGet("/AddHeader", (HttpResponse response) =>
   return "Testing";
 });
 
-app.MapPost("/saveproduct", (Product product) =>
+app.MapPost("/products", (Product product) =>
 {
   ProductRepository.add(product);
 });
 
 //dynamic params per URL
-app.MapGet("/getproduct", ([FromQuery] string dateStart, [FromQuery] string dateEnd) =>
+app.MapGet("/products", ([FromQuery] string dateStart, [FromQuery] string dateEnd) =>
 {
   return dateStart + " - " + dateEnd;
 });
 
 //required params per URL
-app.MapGet("/getproduct/{code}", ([FromRoute] string code) =>
+app.MapGet("/products/{code}", ([FromRoute] string code) =>
 {
   var product = ProductRepository.getBy(code);
   return product;
@@ -36,14 +36,14 @@ app.MapGet("/getproductWithHeader", (HttpRequest request) =>
 }
 );
 
-app.MapPut("/editproduct", (Product product) =>
+app.MapPut("/products", (Product product) =>
 {
   var productSaved = ProductRepository.getBy(product.Code);
 
   productSaved.Name = product.Name;
 });
 
-app.MapDelete("/deleteproduct/{code}", ([FromRoute] string code) =>
+app.MapDelete("/products/{code}", ([FromRoute] string code) =>
 {
   var productSaved = ProductRepository.getBy(code);
   ProductRepository.remove(productSaved);
