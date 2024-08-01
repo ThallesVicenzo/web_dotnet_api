@@ -46,16 +46,16 @@ app.MapDelete("/products/{code}", ([FromRoute] string code) =>
 });
 
 //dynamic params per URL
-app.MapGet("/products", ([FromQuery] string dateStart, [FromQuery] string dateEnd) =>
-{
-  return dateStart + " - " + dateEnd;
-});
+// app.MapGet("/products", ([FromQuery] string dateStart, [FromQuery] string dateEnd) =>
+// {
+//   return dateStart + " - " + dateEnd;
+// });
 
-app.MapGet("/getproductWithHeader", (HttpRequest request) =>
-{
-  return request.Headers["product-code"].ToString();
-}
-);
+// app.MapGet("/getproductWithHeader", (HttpRequest request) =>
+// {
+//   return request.Headers["product-code"].ToString();
+// }
+// );
 
 app.Run();
 
