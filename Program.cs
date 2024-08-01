@@ -15,6 +15,34 @@ app.MapGet("/AddHeader", (HttpResponse response) =>
 app.MapPost("/products", (Product product) =>
 {
   ProductRepository.add(product);
+  return Results.Created($"/product/{product.Code}", product.Code);
+});
+
+//required params per URL
+app.MapGet("/products/{code}", ([FromRoute] string code) =>
+{
+  var product = ProductRepository.getBy(code);
+  if (product != null)
+    return Results.Ok(product);
+
+  return Results.NotFound();
+});
+
+app.MapPut("/products", (Product product) =>
+{
+  var productSaved = ProductRepository.getBy(product.Code);
+
+  productSaved.Name = product.Name;
+
+  return Results.Ok();
+});
+
+app.MapDelete("/products/{code}", ([FromRoute] string code) =>
+{
+  var productSaved = ProductRepository.getBy(code);
+  ProductRepository.remove(productSaved);
+
+  return Results.Ok();
 });
 
 //dynamic params per URL
@@ -23,31 +51,11 @@ app.MapGet("/products", ([FromQuery] string dateStart, [FromQuery] string dateEn
   return dateStart + " - " + dateEnd;
 });
 
-//required params per URL
-app.MapGet("/products/{code}", ([FromRoute] string code) =>
-{
-  var product = ProductRepository.getBy(code);
-  return product;
-});
-
 app.MapGet("/getproductWithHeader", (HttpRequest request) =>
 {
   return request.Headers["product-code"].ToString();
 }
 );
-
-app.MapPut("/products", (Product product) =>
-{
-  var productSaved = ProductRepository.getBy(product.Code);
-
-  productSaved.Name = product.Name;
-});
-
-app.MapDelete("/products/{code}", ([FromRoute] string code) =>
-{
-  var productSaved = ProductRepository.getBy(code);
-  ProductRepository.remove(productSaved);
-});
 
 app.Run();
 
