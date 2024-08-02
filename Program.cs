@@ -2,7 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
+
 var app = builder.Build();
+
+var configuration = app.Configuration;
+
+ProductRepository.Init(configuration);
 
 app.MapGet("/", () => "Hello World!");
 app.MapGet("/user", () => new { name = "Thalles Vicenzo", age = 22 });
@@ -32,7 +37,7 @@ app.MapPut("/products", (Product product) =>
 {
   var productSaved = ProductRepository.getBy(product.Code);
 
-  productSaved.Name = product.Name;
+  productSaved!.Name = product.Name;
 
   return Results.Ok();
 });
@@ -40,7 +45,7 @@ app.MapPut("/products", (Product product) =>
 app.MapDelete("/products/{code}", ([FromRoute] string code) =>
 {
   var productSaved = ProductRepository.getBy(code);
-  ProductRepository.remove(productSaved);
+  ProductRepository.remove(productSaved!);
 
   return Results.Ok();
 });
@@ -57,23 +62,33 @@ app.MapDelete("/products/{code}", ([FromRoute] string code) =>
 // }
 // );
 
+app.MapGet("/configuration/database", (IConfiguration configuration) =>
+{
+  return Results.Ok($"{configuration["database:connection"]}/{configuration["database:port"]}");
+});
+
 app.Run();
 
 public static class ProductRepository
 {
-  public static List<Product>? Products { get; set; }
+  public static List<Product>? Products { get; set; } = Products = [];
+
+  public static void Init(IConfiguration configuration)
+  {
+    var products = configuration.GetSection("Products").Get<List<Product>>();
+    Products = products;
+  }
+
 
   public static void add(Product product)
   {
     if (Products == null)
-      Products = new List<Product>();
-
-    Products.Add(product);
+      Products?.Add(product);
   }
 
-  public static Product getBy(string code)
+  public static Product? getBy(string code)
   {
-    return Products.FirstOrDefault(p => p.Code == code);
+    return Products?.FirstOrDefault(p => p.Code == code);
   }
 
   public static void remove(Product product)
