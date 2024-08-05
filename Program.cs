@@ -107,14 +107,23 @@ public class Product
   public int Id { get; set; }
   public required string Code { get; set; }
   public required string Name { get; set; }
-  public required string Description { get; set; }
+  public string? Description { get; set; }
 }
 
 public class ApplicationDbContext : DbContext
 {
   public DbSet<Product> Products { get; set; }
 
+  protected override void OnModelCreating(ModelBuilder modelBuilder)
+  {
+    base.OnModelCreating(modelBuilder);
+
+    modelBuilder.Entity<Product>().Property(p => p.Description).HasMaxLength(500).IsRequired(false);
+    modelBuilder.Entity<Product>().Property(p => p.Name).HasMaxLength(120).IsRequired();
+    modelBuilder.Entity<Product>().Property(p => p.Code).HasMaxLength(20).IsRequired();
+  }
+
   protected override void OnConfiguring(DbContextOptionsBuilder options)
-    => options.UseSqlServer(
-        "Server=localhost;Database=Products;User Id=sa;Password=@Sql2022;MultipleActiveResultSets=true;Encrypt=YES;TrustServerCertificate=YES");
+  => options.UseSqlServer(
+      "Server=localhost;Database=Products;User Id=sa;Password=@Sql2022;MultipleActiveResultSets=true;Encrypt=YES;TrustServerCertificate=YES");
 }
