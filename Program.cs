@@ -1,7 +1,10 @@
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<ApplicationDbContext>();
 
 var app = builder.Build();
 
@@ -103,4 +106,13 @@ public class Product
 {
   public required string Code { get; set; }
   public required string Name { get; set; }
+}
+
+public class ApplicationDbContext : DbContext
+{
+  public DbSet<Product> Products { get; set; }
+
+  protected override void OnConfiguring(DbContextOptionsBuilder options)
+    => options.UseSqlServer(
+        "Server=localhost;Database=Products;User Id=sa;Password=@Sql2022;MultipleActiveResultSets=true;Encrypt=YES;TrustServerCertificate=YES");
 }
