@@ -19,10 +19,22 @@ app.MapGet("/AddHeader", (HttpResponse response) =>
   return "Testing";
 });
 
-app.MapPost("/products", (Product product) =>
+app.MapPost("/products", (ProductRequest productRequest, ApplicationDbContext context) =>
 {
-  ProductRepository.add(product);
-  return Results.Created($"/product/{product.Code}", product.Code);
+  var category = context.Categories.Where(c => c.Id == productRequest.CategoryId).First();
+
+  var product = new Product
+  {
+    Code = productRequest.Code,
+    Name = productRequest.Name,
+    Description = productRequest.Description,
+    Category = category,
+  };
+
+  context.Products.Add(product);
+  context.SaveChanges();
+
+  return Results.Created($"/product/{product.Id}", product.Id);
 });
 
 //required params per URL
