@@ -1,5 +1,6 @@
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,9 +48,13 @@ app.MapPost("/products", (ProductRequest productRequest, ApplicationDbContext co
 });
 
 //required params per URL
-app.MapGet("/products/{code}", ([FromRoute] string code) =>
+app.MapGet("/products/{id}", ([FromRoute] int id, ApplicationDbContext context) =>
 {
-  var product = ProductRepository.getBy(code);
+  var product = context.Products
+  .Include(p => p.Category)
+  .Include(p => p.Tags)
+  .Where(p => p.Id == id).First();
+
   if (product != null)
     return Results.Ok(product);
 
